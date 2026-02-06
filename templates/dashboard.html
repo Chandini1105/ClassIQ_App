@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>📊 Dashboard</h1>
+
+<!-- College Hours & Current Status -->
+<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+    <p style="margin: 0 0 10px 0; font-size: 14px;">⏰ <strong>College Hours:</strong> {{ school_start|date:"g:i A" }} - {{ school_end|date:"g:i A" }}</p>
+    <p style="margin: 0; font-size: 14px;">🕐 <strong>Current Time (IST):</strong> {{ current_time|date:"g:i A" }}</p>
+</div>
+
+<div class="cards">
+
+    <div class="card">
+        <h3>🔴 Active Classes</h3>
+        <p>{{ active_count }}</p>
+        <small>Classes currently running</small>
+    </div>
+
+    <div class="card">
+        <h3>✅ Available Classrooms</h3>
+        <p>{{ available_count }}</p>
+        <small>Rooms free right now</small>
+    </div>
+
+</div>
+
+<!-- ACTIVE CLASSES SECTION -->
+<div class="section">
+    <h2>🔴 Active Classes (Right Now)</h2>
+
+    {% if ongoing_classes %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Course</th>
+                <th>Faculty</th>
+                <th>Classroom</th>
+                <th>Time</th>
+                <th>Student Leader</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for alloc in ongoing_classes %}
+            <tr>
+                <td>{{ alloc.course }}</td>
+                <td>{{ alloc.course.faculty.name }}</td>
+                <td>{{ alloc.classroom }}</td>
+                <td>{{ alloc.start_time|date:"g:i A" }} – {{ alloc.end_time|date:"g:i A" }}</td>
+                <td>
+                    {% if alloc.student_leader %}
+                        {{ alloc.student_leader.name }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p class="empty-message">No active classes right now 🎉</p>
+    {% endif %}
+</div>
+
+<!-- UPCOMING CLASSES SECTION -->
+<div class="section">
+    <h2>📅 Upcoming Classes (Today)</h2>
+
+    {% if upcoming_classes %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Course</th>
+                <th>Faculty</th>
+                <th>Classroom</th>
+                <th>Start Time</th>
+                <th>Duration</th>
+                <th>Student Leader</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for alloc in upcoming_classes %}
+            <tr>
+                <td>{{ alloc.course }}</td>
+                <td>{{ alloc.course.faculty.name }}</td>
+                <td>{{ alloc.classroom }}</td>
+                <td>{{ alloc.start_time|date:"g:i A" }}</td>
+                <td>{{ alloc.duration_minutes }} min</td>
+                <td>
+                    {% if alloc.student_leader %}
+                        {{ alloc.student_leader.name }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p class="empty-message">No upcoming classes today</p>
+    {% endif %}
+</div>
+
+<!-- AVAILABLE CLASSROOMS RIGHT NOW -->
+<div class="section">
+    <h2>✅ Available Classrooms (Right Now)</h2>
+
+    {% if available_rooms %}
+    <div class="classroom-grid">
+        {% for room in available_rooms %}
+        <div class="classroom-card">
+            <h4>{{ room.room_number }}</h4>
+            <p class="capacity">Capacity: {{ room.capacity }} students</p>
+            <p class="status-available">✓ Available Now</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <p class="empty-message">All classrooms are currently booked</p>
+    {% endif %}
+</div>
+
+<!-- BOOKED CLASSROOMS TODAY -->
+<div class="section">
+    <h2>📅 Booked Classrooms (Today)</h2>
+
+    {% if all_allocations %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Classroom</th>
+                <th>Course</th>
+                <th>Faculty</th>
+                <th>Time</th>
+                <th>Duration</th>
+                <th>Student Leader</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for alloc in all_allocations %}
+            <tr>
+                <td><strong>{{ alloc.classroom }}</strong></td>
+                <td>{{ alloc.course }}</td>
+                <td>{{ alloc.course.faculty.name }}</td>
+                <td>{{ alloc.start_time|date:"g:i A" }} – {{ alloc.end_time|date:"g:i A" }}</td>
+                <td>{{ alloc.duration_minutes }} min</td>
+                <td>
+                    {% if alloc.student_leader %}
+                        {{ alloc.student_leader.name }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
+                <td>
+                    {% if alloc in ongoing_classes %}
+                        <span class="status ongoing">🔴 Active</span>
+                    {% elif alloc in upcoming_classes %}
+                        <span class="status upcoming">🕐 Upcoming</span>
+                    {% else %}
+                        <span class="status past">✓ Completed</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p class="empty-message">No classrooms booked today</p>
+    {% endif %}
+</div>
+
+<style>
+    .empty-message {
+        color: #999;
+        text-align: center;
+        padding: 20px;
+        font-style: italic;
+    }
+    
+    .status {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    
+    .status.ongoing {
+        background: #ffcccc;
+        color: #cc0000;
+    }
+    
+    .status.upcoming {
+        background: #fff4cc;
+        color: #cc8800;
+    }
+    
+    .status.past {
+        background: #ccffcc;
+        color: #008800;
+    }
+    
+    .classroom-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+    }
+    
+    .classroom-card {
+        background: white;
+        border: 2px solid #4CAF50;
+        border-radius: 8px;
+        padding: 15px;
+        text-align: center;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .classroom-card h4 {
+        margin: 0 0 8px 0;
+        color: #333;
+        font-size: 18px;
+    }
+    
+    .classroom-card .capacity {
+        margin: 0 0 10px 0;
+        color: #666;
+        font-size: 13px;
+    }
+    
+    .classroom-card .status-available {
+        margin: 0;
+        color: #4CAF50;
+        font-weight: 600;
+        font-size: 12px;
+    }
+</style>
+{% endblock %}
+

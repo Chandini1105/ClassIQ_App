@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>📚 Active Classes</h1>
+
+{% if allocations %}
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Course</th>
+            <th>Faculty</th>
+            <th>Classroom</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in allocations %}
+        <tr>
+            <td>{{ item.allocation.course }}</td>
+            <td>{{ item.allocation.course.faculty.name }}</td>
+            <td>{{ item.allocation.classroom }}</td>
+            <td>{{ item.allocation.date }}</td>
+            <td>{{ item.allocation.start_time|date:"g:i A" }} – {{ item.allocation.end_time|date:"g:i A" }}</td>
+            <td>
+                {% if item.status == "Active" %}
+                    <span class="status active">🔴 Active</span>
+                {% elif item.status == "Completed" %}
+                    <span class="status completed">✅ Completed</span>
+                {% else %}
+                    <span class="status upcoming">🕐 Upcoming</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="empty-state">
+    <h3>No Classes Today</h3>
+    <p>All classrooms are currently free 🎉</p>
+</div>
+{% endif %}
+
+<style>
+    .status {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-block;
+    }
+    
+    .status.active {
+        background: #ffcccc;
+        color: #cc0000;
+    }
+    
+    .status.completed {
+        background: #ccffcc;
+        color: #008800;
+    }
+    
+    .status.upcoming {
+        background: #fff4cc;
+        color: #cc8800;
+    }
+</style>
+
+{% endblock %}
+

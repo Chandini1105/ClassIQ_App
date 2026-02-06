@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🏫 Book a Classroom</h1>
+    <p class="subtitle">Fill in the details to reserve a classroom</p>
+</div>
+
+<!-- College Hours Info -->
+<div style="background: #e3f2fd; border-left: 4px solid #2196F3; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
+    <p style="margin: 0; color: #1565c0;"><strong>📅 College Hours:</strong> {{ school_start|date:"g:i A" }} - {{ school_end|date:"g:i A" }}</p>
+    <p style="margin: 5px 0 0 0; color: #1565c0; font-size: 13px;">Classes must start and end within these hours.</p>
+</div>
+
+<div class="form-card">
+    {% if form.non_field_errors %}
+    <div class="error-box">
+        {{ form.non_field_errors }}
+    </div>
+    {% endif %}
+
+    <form method="post" class="booking-form">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="id_student_leader" class="form-label">Student Leader <span class="optional">(Optional)</span></label>
+            {{ form.student_leader }}
+            {% if form.student_leader.errors %}
+                <div class="error-text">{{ form.student_leader.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_faculty" class="form-label">Faculty <span class="required">*</span></label>
+            {{ form.faculty }}
+            {% if form.faculty.errors %}
+                <div class="error-text">{{ form.faculty.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_course" class="form-label">Course <span class="required">*</span></label>
+            {{ form.course }}
+            {% if form.course.errors %}
+                <div class="error-text">{{ form.course.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_classroom" class="form-label">Classroom Number <span class="required">*</span></label>
+            {{ form.classroom }}
+            {% if form.classroom.errors %}
+                <div class="error-text">{{ form.classroom.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="id_date" class="form-label">Date <span class="required">*</span></label>
+                {{ form.date }}
+                {% if form.date.errors %}
+                    <div class="error-text">{{ form.date.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_start_time" class="form-label">Start Time <span class="required">*</span><br><small style="color: #666; font-weight: normal;">Must be between {{ school_start|date:"g:i A" }}-{{ school_end|date:"g:i A" }}</small></label>
+                {{ form.start_time }}
+                {% if form.start_time.errors %}
+                    <div class="error-text">{{ form.start_time.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_duration_minutes" class="form-label">Duration (minutes) <span class="required">*</span><br><small style="color: #666; font-weight: normal;">Must end by {{ school_end|date:"g:i A" }}</small></label>
+                {{ form.duration_minutes }}
+                {% if form.duration_minutes.errors %}
+                    <div class="error-text">{{ form.duration_minutes.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">
+                ✅ Book Classroom
+            </button>
+            <a href="{% url 'dashboard' %}" class="btn-secondary">
+                ❌ Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

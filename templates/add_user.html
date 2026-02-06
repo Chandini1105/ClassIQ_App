@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-header">
+    <h1>👤 Add New User</h1>
+    <p>Create new ClassIQ accounts with default password (CMRU 1) and @cmr.edu.in email</p>
+</div>
+
+{% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px;">
+    
+    <!-- Add User Form -->
+    <div class="card">
+        <h3 style="margin-top: 0; color: #333;">Create New User</h3>
+        <form method="post" style="margin-top: 20px;">
+            {% csrf_token %}
+            
+            <div style="margin-bottom: 15px;">
+                <label for="name" style="display: block; margin-bottom: 5px; font-weight: 500; color: #555;">Full Name</label>
+                <input type="text" id="name" name="name" class="form-control" placeholder="e.g., John Doe" required>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label for="email" style="display: block; margin-bottom: 5px; font-weight: 500; color: #555;">Email</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="name@cmr.edu.in" required>
+                <small style="color: #999; margin-top: 5px; display: block;">Must end with @cmr.edu.in</small>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 10px; background: #667eea; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">
+                ✓ Create User
+            </button>
+        </form>
+        
+        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+            <p style="color: #666; font-size: 14px;">
+                <strong>Default Password:</strong> <code style="background: #f0f0f0; padding: 2px 6px; border-radius: 3px;">CMRU 1</code>
+            </p>
+            <p style="color: #666; font-size: 14px; margin: 10px 0 0 0;">
+                Users can change their password after first login.
+            </p>
+        </div>
+    </div>
+    
+    <!-- Existing Users -->
+    <div class="card">
+        <h3 style="margin-top: 0; color: #333;">📋 Existing Users</h3>
+        {% if users %}
+            <div style="max-height: 500px; overflow-y: auto;">
+                <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                    <thead>
+                        <tr style="background: #f5f5f5; border-bottom: 2px solid #ddd;">
+                            <th style="padding: 10px; text-align: left; color: #555;">Email</th>
+                            <th style="padding: 10px; text-align: left; color: #555;">Name</th>
+                            <th style="padding: 10px; text-align: center; color: #555;">Staff</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr style="border-bottom: 1px solid #eee; hover-background: #f9f9f9;">
+                            <td style="padding: 10px; color: #333;">{{ user.email }}</td>
+                            <td style="padding: 10px; color: #666;">{{ user.get_full_name }}</td>
+                            <td style="padding: 10px; text-align: center;">
+                                {% if user.is_staff %}
+                                    <span style="color: green; font-weight: bold;">✓</span>
+                                {% else %}
+                                    <span style="color: #ccc;">—</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p style="color: #999; margin-top: 20px; text-align: center;">No users yet.</p>
+        {% endif %}
+    </div>
+    
+</div>
+
+<div style="margin-top: 30px; padding: 20px; background: #f0f7ff; border-left: 4px solid #667eea; border-radius: 6px;">
+    <p style="margin: 0; color: #333;">
+        <strong>📝 Command Line Alternative:</strong><br>
+        <code style="background: white; padding: 10px; display: block; margin-top: 10px; border-radius: 3px; font-family: monospace; color: #d63384;">
+            python manage.py add_user "John Doe" --email johndoe@cmr.edu.in
+        </code>
+    </p>
+</div>
+
+<style>
+    .card {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        font-family: inherit;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .alert {
+        padding: 12px 16px;
+        border-radius: 6px;
+        margin-bottom: 15px;
+    }
+    
+    .alert-success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    
+    .alert-error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+    
+    .page-header {
+        margin-bottom: 20px;
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 15px;
+    }
+    
+    .page-header h1 {
+        margin: 0 0 5px 0;
+        color: #1f2933;
+    }
+    
+    .page-header p {
+        margin: 0;
+        color: #666;
+        font-size: 14px;
+    }
+</style>
+{% endblock %}
