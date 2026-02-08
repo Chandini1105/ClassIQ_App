@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +21,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-78)(mz4q=fnf1mc7(v=%#9+_6mlhr&^zaprgclp_i8z%#!wpq$'
+# Load secret key from environment when deployed (Render). Fall back to
+# the existing development key for local development.
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY",
+    'django-insecure-78)(mz4q=fnf1mc7(v=%#9+_6mlhr&^zaprgclp_i8z%#!wpq$'
+)
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG should be explicitly set in the environment to "True" or "False".
+DEBUG = os.environ.get("DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = []
+# Allow passing a comma-separated list of hosts via the ALLOWED_HOSTS env var.
+ALLOWED_HOSTS = [
+    h.strip()
+    for h in os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+    if h.strip()
+]
 
 
 # Application definition
@@ -42,6 +53,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -49,6 +61,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# Static files (for Render or other hosts)
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(str(BASE_DIR), "staticfiles")
+# Use WhiteNoise storage for compressed static files
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Custom Authentication Backend
 AUTHENTICATION_BACKENDS = [
