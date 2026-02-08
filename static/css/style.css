@@ -1,8 +1,21 @@
+:root{
+    --bg: #f5f7fb;
+    --surface: #ffffff;
+    --muted: #6b7280;
+    --text: #0f1724;
+    --primary-600: #0b5fff;
+    --primary-700: #0a4ad1;
+    --sidebar: #0b2948;
+    --accent: #eef6ff;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
 body {
     margin: 0;
-    font-family: "Segoe UI", Roboto, Arial, sans-serif;
-    background: #f4f6f8;
-    color: #1f2933;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
 }
 
 h1, h2, h3 {
@@ -11,41 +24,186 @@ h1, h2, h3 {
 
 .app-container {
     display: flex;
-    height: 100vh;
+    min-height: 100vh;
 }
 
 .sidebar {
-    width: 220px;
-    background: #1f2933;
+    width: 240px;
+    background: var(--sidebar);
     color: white;
-    padding: 25px 20px;
+    padding: 28px 22px;
+    display: flex;
+    flex-direction: column;
 }
 
 .logo {
-    font-size: 22px;
-    font-weight: bold;
-    margin-bottom: 35px;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 28px;
+    letter-spacing: 0.4px;
 }
 
 .sidebar a {
     display: block;
-    color: #cbd5e1;
+    color: #dbeafe;
     text-decoration: none;
-    margin: 14px 0;
-    padding: 8px 10px;
-    border-radius: 6px;
-    transition: all 0.2s ease;
+    margin: 10px 0;
+    padding: 10px 12px;
+    border-radius: 8px;
+    transition: all 0.18s ease;
+    font-weight: 600;
+    font-size: 14px;
 }
 
 .sidebar a:hover {
-    background: #374151;
+    background: rgba(255,255,255,0.04);
     color: white;
 }
 
 .main-content {
     flex: 1;
-    padding: 30px;
+    padding: 28px 36px;
     overflow-y: auto;
+}
+
+/* Constrain the main content for better alignment and readability */
+.main-content > .topbar {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.main-content .page-header,
+.main-content .cards,
+.main-content .section,
+.main-content .form-card,
+.main-content .form-box,
+.main-content .messages,
+.main-content table,
+.main-content .classroom-grid {
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.cards {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.classroom-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.section {
+    margin-top: 40px;
+}
+
+.section h2 {
+    font-size: 22px;
+    color: #0f1724;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+/* Ensure tables and cards align nicely on small screens */
+    .main-content {
+        padding: 20px;
+    }
+
+    .cards {
+        gap: 14px;
+    }
+
+    .card {
+        width: 100%;
+        max-width: 420px;
+    }
+
+.topbar {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface);
+    padding: 0;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(15,23,36,0.04);
+    margin-bottom: 18px;
+}
+
+.topbar-inner {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand .mark {
+    width: 44px;
+    height: 44px;
+    background: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-weight: 700;
+    color: var(--primary-600);
+}
+
+.top-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.btn-ghost {
+    background: transparent;
+    border: 1px solid rgba(15,23,36,0.06);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.btn-ghost:hover {
+    background: rgba(15,23,36,0.04);
+}
+
+.btn-help {
+    background: linear-gradient(135deg, #0b5fff 0%, #0a4ad1 100%);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    display: inline-block;
+}
+
+.btn-help:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(11, 95, 255, 0.3);
+}
+
+.btn-primary {
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: linear-gradient(135deg,var(--primary-600) 0%,var(--primary-700) 100%);
+    color: white;
 }
 
 .cards {
@@ -55,11 +213,11 @@ h1, h2, h3 {
 }
 
 .card {
-    background: white;
-    padding: 20px;
+    background: var(--surface);
+    padding: 18px;
     border-radius: 10px;
-    width: 220px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    width: 240px;
+    box-shadow: 0 6px 18px rgba(15,23,36,0.04);
 }
 
 .card h3 {
@@ -71,19 +229,17 @@ h1, h2, h3 {
 .card p {
     font-size: 28px;
     font-weight: bold;
-}
-
-.section {
+}.section {
     margin-top: 40px;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    background: white;
+    background: var(--surface);
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    box-shadow: 0 6px 18px rgba(15,23,36,0.04);
 }
 
 table th {
@@ -102,11 +258,11 @@ table tr:last-child td {
 }
 
 .form-box {
-    background: white;
+    background: var(--surface);
     padding: 30px;
-    width: 450px;
+    width: 520px;
     border-radius: 12px;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+    box-shadow: 0 8px 22px rgba(15,23,36,0.05);
 }
 
 .form-box p {
@@ -136,17 +292,18 @@ table tr:last-child td {
 
 button {
     padding: 10px 22px;
-    background: #2563eb;
+    background: var(--primary-600);
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 14px;
     cursor: pointer;
-    transition: background 0.2s ease;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
 button:hover {
-    background: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(11,95,255,0.12);
 }
 
 .error {
@@ -203,15 +360,15 @@ button:hover {
 }
 
 .nav-menu a.active {
-    background: #2563eb;
+    background: linear-gradient(90deg,var(--primary-600),var(--primary-700));
     color: white;
     padding-left: 12px;
-    border-radius: 6px;
+    border-radius: 8px;
 }
 
 .nav-menu a.logout {
     margin-top: 30px;
-    color: #fca5a5;
+    color: #ffd7d7;
 }
 
 .messages {

@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>📚 Active Classes</h1>
+<div class="page-header">
+    <h1>👁️Active Classes</h1>
+    <p class="subtitle">Today's classroom schedule and status</p>
+</div>
 
 {% if allocations %}
 <table class="data-table">
@@ -25,11 +28,11 @@
             <td>{{ item.allocation.start_time|date:"g:i A" }} – {{ item.allocation.end_time|date:"g:i A" }}</td>
             <td>
                 {% if item.status == "Active" %}
-                    <span class="status active">🔴 Active</span>
+                    <span class="status active">Active</span>
                 {% elif item.status == "Completed" %}
-                    <span class="status completed">✅ Completed</span>
+                    <span class="status">Completed</span>
                 {% else %}
-                    <span class="status upcoming">🕐 Upcoming</span>
+                    <span class="status upcoming">Upcoming</span>
                 {% endif %}
             </td>
         </tr>
@@ -39,16 +42,16 @@
 {% else %}
 <div class="empty-state">
     <h3>No Classes Today</h3>
-    <p>All classrooms are currently free 🎉</p>
+    <p>All classrooms are currently free</p>
 </div>
 {% endif %}
 
 <style>
     .status {
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 600;
+        padding: 6px 10px;
+        border-radius: 14px;
+        font-size: 13px;
+        font-weight: 700;
         display: inline-block;
     }
     

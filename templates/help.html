@@ -1,0 +1,408 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>Help & Support</h1>
+    <p class="subtitle">Learn how to use ClassIQ and manage classroom scheduling</p>
+</div>
+
+<div class="help-container">
+    <!-- Welcome Card -->
+    <div class="help-welcome">
+        <div class="welcome-icon">❓</div>
+        <h2>Welcome to ClassIQ Help Center</h2>
+        <p>ClassIQ is your campus classroom scheduling and management system. Below you'll find comprehensive guides and FAQs to help you get the most out of the platform.</p>
+    </div>
+
+    <!-- Help Grid -->
+    <div class="help-grid">
+        <!-- Dashboard Guide -->
+        <div class="help-card help-card-blue">
+            <div class="help-card-icon">📊</div>
+            <h3>Dashboard Overview</h3>
+            <p class="help-card-desc">Understand the main dashboard features</p>
+            <div class="help-card-content">
+                <ul>
+                    <li><strong>College Hours:</strong> View the institution's operating hours</li>
+                    <li><strong>Active Classes:</strong> See all classes currently running</li>
+                    <li><strong>Available Classrooms:</strong> Check which rooms are free right now</li>
+                    <li><strong>Upcoming Classes:</strong> Plan ahead with today's schedule</li>
+                    <li><strong>Booked Classrooms:</strong> View all bookings for the day</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Booking Guide -->
+        <div class="help-card help-card-green">
+            <div class="help-card-icon">📅</div>
+            <h3>Booking a Classroom</h3>
+            <p class="help-card-desc">Step-by-step guide to reserve a classroom</p>
+            <div class="help-card-content">
+                <ol>
+                    <li>Navigate to <strong>"Book Classroom"</strong> from the sidebar</li>
+                    <li>Select your <strong>course</strong> and <strong>faculty</strong></li>
+                    <li>Choose your preferred <strong>classroom</strong> and <strong>date</strong></li>
+                    <li>Set the <strong>start time</strong> and <strong>duration</strong></li>
+                    <li>Optionally assign a <strong>student leader</strong></li>
+                    <li>Click <strong>"Book"</strong> to confirm the reservation</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Active Classes Guide -->
+        <div class="help-card help-card-purple">
+            <div class="help-card-icon">👥</div>
+            <h3>Active Classes</h3>
+            <p class="help-card-desc">Manage and view ongoing classes</p>
+            <div class="help-card-content">
+                <ul>
+                    <li><strong>Real-time View:</strong> See all classes happening right now</li>
+                    <li><strong>Class Details:</strong> View course info, faculty name, and assigned classroom</li>
+                    <li><strong>Student Leaders:</strong> Identify who's leading each session</li>
+                    <li><strong>Time Display:</strong> See exact start and end times in IST</li>
+                    <li><strong>Quick Updates:</strong> Check status without refreshing</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Best Practices -->
+        <div class="help-card help-card-orange">
+            <div class="help-card-icon">⭐</div>
+            <h3>Best Practices</h3>
+            <p class="help-card-desc">Tips for effective scheduling</p>
+            <div class="help-card-content">
+                <ul>
+                    <li><strong>Book Early:</strong> Reserve classrooms well in advance</li>
+                    <li><strong>Check Availability:</strong> View available rooms before booking</li>
+                    <li><strong>Set Accurate Times:</strong> Include buffer time between classes</li>
+                    <li><strong>Assign Leaders:</strong> Designate student leaders for smooth operations</li>
+                    <li><strong>Review Daily:</strong> Check the schedule each morning</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Classroom Features -->
+        <div class="help-card help-card-pink">
+            <div class="help-card-icon">🏫</div>
+            <h3>Classroom Information</h3>
+            <p class="help-card-desc">Details about available rooms</p>
+            <div class="help-card-content">
+                <ul>
+                    <li><strong>Capacity:</strong> Each classroom has a student capacity limit</li>
+                    <li><strong>Availability:</strong> Real-time availability shown on dashboard</li>
+                    <li><strong>Status Indicators:</strong> Green = Available, Red = Occupied</li>
+                    <li><strong>Room Numbers:</strong> Unique identifiers for easy navigation</li>
+                    <li><strong>Features:</strong> All active rooms equipped with essential amenities</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Troubleshooting -->
+        <div class="help-card help-card-teal">
+            <div class="help-card-icon">🔧</div>
+            <h3>Troubleshooting</h3>
+            <p class="help-card-desc">Common issues and solutions</p>
+            <div class="help-card-content">
+                <ul>
+                    <li><strong>Can't Find a Room?</strong> Check if all classrooms are booked. Try different time slots</li>
+                    <li><strong>Booking Failed?</strong> Ensure no overlapping time slots. Check date format</li>
+                    <li><strong>Missing Faculty?</strong> Contact administrator to add faculty members</li>
+                    <li><strong>Page Not Loading?</strong> Clear browser cache and refresh</li>
+                    <li><strong>Time Zone Issues?</strong> All times displayed in IST (Indian Standard Time)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq-section">
+        <h2 class="faq-title">Frequently Asked Questions</h2>
+        
+        <div class="faq-grid">
+            <div class="faq-item">
+                <div class="faq-question">❓ Can I book a classroom for multiple days?</div>
+                <div class="faq-answer">Currently, bookings are made on a per-day basis. For recurring classes, you'll need to book each session individually.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">❓ What's the maximum class duration?</div>
+                <div class="faq-answer">You can book classrooms for any duration, but it cannot extend beyond college closing time. Always check the "College Hours" on the dashboard.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">❓ Can I modify a booking after creating it?</div>
+                <div class="faq-answer">You'll need to contact the administrator to modify existing bookings. Plan carefully before booking.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">❓ How do I assign a student leader?</div>
+                <div class="faq-answer">When booking or managing a class, you can select a student leader from the available list. This helps identify who's managing the session.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">❓ What happens if there's a scheduling conflict?</div>
+                <div class="faq-answer">The system prevents overlapping bookings in the same classroom. If you get a conflict error, choose a different time or classroom.</div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">❓ How often is the availability updated?</div>
+                <div class="faq-answer">Classroom availability updates in real-time. Refresh the page to see the latest status.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Support -->
+    <div class="support-section">
+        <h2>Need More Help?</h2>
+        <p>If you can't find the answer you're looking for, reach out to the administration team for additional support.</p>
+        <div class="support-actions">
+            <button class="btn-support" onclick="alert('Contact the administration for detailed support.')">Contact Support</button>
+            <a href="{% url 'dashboard' %}" class="btn-back">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .help-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .help-welcome {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px 30px;
+        border-radius: 12px;
+        text-align: center;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .welcome-icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+    }
+
+    .help-welcome h2 {
+        margin: 0 0 12px 0;
+        font-size: 28px;
+    }
+
+    .help-welcome p {
+        margin: 0;
+        font-size: 16px;
+        opacity: 0.95;
+    }
+
+    .help-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+        gap: 24px;
+        margin-bottom: 40px;
+    }
+
+    .help-card {
+        background: white;
+        border-radius: 12px;
+        padding: 28px;
+        box-shadow: 0 6px 20px rgba(15, 23, 36, 0.08);
+        border-left: 4px solid;
+        transition: all 0.3s ease;
+    }
+
+    .help-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px rgba(15, 23, 36, 0.12);
+    }
+
+    .help-card-blue {
+        border-left-color: #0b5fff;
+    }
+
+    .help-card-green {
+        border-left-color: #10b981;
+    }
+
+    .help-card-purple {
+        border-left-color: #8b5cf6;
+    }
+
+    .help-card-orange {
+        border-left-color: #f59e0b;
+    }
+
+    .help-card-pink {
+        border-left-color: #ec4899;
+    }
+
+    .help-card-teal {
+        border-left-color: #06b6d4;
+    }
+
+    .help-card-icon {
+        font-size: 40px;
+        margin-bottom: 12px;
+    }
+
+    .help-card h3 {
+        margin: 0 0 8px 0;
+        color: #0f1724;
+        font-size: 20px;
+    }
+
+    .help-card-desc {
+        color: #6b7280;
+        margin: 0 0 16px 0;
+        font-size: 14px;
+    }
+
+    .help-card-content ul,
+    .help-card-content ol {
+        margin: 0;
+        padding-left: 20px;
+        color: #4b5563;
+        line-height: 1.8;
+    }
+
+    .help-card-content li {
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
+
+    .faq-section {
+        margin-bottom: 40px;
+    }
+
+    .faq-title {
+        text-align: center;
+        color: #0f1724;
+        font-size: 28px;
+        margin-bottom: 30px;
+    }
+
+    .faq-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 20px;
+    }
+
+    .faq-item {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(15, 23, 36, 0.06);
+        border: 1px solid rgba(15, 23, 36, 0.05);
+    }
+
+    .faq-question {
+        font-weight: 700;
+        color: #0f1724;
+        margin-bottom: 12px;
+        font-size: 15px;
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+
+    .faq-question:hover {
+        color: #0b5fff;
+    }
+
+    .faq-answer {
+        color: #6b7280;
+        font-size: 14px;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .support-section {
+        background: linear-gradient(135deg, #0b5fff 0%, #0a4ad1 100%);
+        color: white;
+        padding: 40px 30px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(11, 95, 255, 0.3);
+    }
+
+    .support-section h2 {
+        margin: 0 0 12px 0;
+        font-size: 26px;
+    }
+
+    .support-section p {
+        margin: 0 0 24px 0;
+        font-size: 16px;
+        opacity: 0.95;
+    }
+
+    .support-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-support {
+        background: white;
+        color: #0b5fff;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 15px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-support:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-back {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 15px;
+        transition: all 0.2s ease;
+        display: inline-block;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-back:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    @media (max-width: 768px) {
+        .help-grid,
+        .faq-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .help-welcome {
+            padding: 30px 20px;
+        }
+
+        .help-welcome h2 {
+            font-size: 22px;
+        }
+
+        .support-section {
+            padding: 30px 20px;
+        }
+
+        .support-actions {
+            flex-direction: column;
+        }
+
+        .btn-support,
+        .btn-back {
+            width: 100%;
+        }
+    }
+</style>
+
+{% endblock %}

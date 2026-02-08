@@ -38,7 +38,6 @@ ALLOWED_HOSTS = [
     if h.strip()
 ]
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -107,7 +106,6 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
@@ -158,3 +156,4 @@ LOGOUT_REDIRECT_URL = '/login/'
 
 # Messages Framework
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+ 

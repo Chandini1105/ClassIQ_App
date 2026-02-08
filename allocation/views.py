@@ -104,6 +104,11 @@ def dashboard(request):
     })
 
 @login_required
+def help(request):
+    """Display help and support page"""
+    return render(request, "help.html")
+
+@login_required
 def book_classroom(request):
     form = AllocationForm(request.POST or None)
 
