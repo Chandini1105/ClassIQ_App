@@ -25,11 +25,11 @@ def get_available_classrooms(date_obj=None, exclude_time_ranges=None):
     If date_obj is provided, filters for that date.
     exclude_time_ranges: list of (start_time, end_time) tuples to exclude
     """
+    local_now = timezone.localtime()
     if date_obj is None:
-        date_obj = date.today()
-    
-    now = timezone.now()
-    current_time = now.time()
+        date_obj = local_now.date()
+
+    current_time = local_now.time()
     
     # Get all active classrooms
     all_rooms = Classroom.objects.filter(is_active=True)
@@ -64,25 +64,25 @@ def logout_view(request):
 
 @login_required
 def dashboard(request):
-    now = timezone.now()
-    today = date.today()
-    current_time = now.time()
+    now = timezone.localtime()
+    today = now.date()
 
-    allocations = Allocation.objects.filter(date=today)
+    # Get all allocations for today
+    all_allocations = Allocation.objects.filter(date=today)
 
     ongoing = []
     upcoming = []
     busy_rooms = []
 
     tz = timezone.get_current_timezone()
-    for a in allocations:
+    for a in all_allocations:
         start_naive = datetime.combine(a.date, a.start_time)
         end_naive = a.end_time()
         
         start = timezone.make_aware(start_naive, timezone=tz)
         end = timezone.make_aware(end_naive, timezone=tz)
 
-        if start <= now <= end:
+        if start <= now < end:
             ongoing.append(a)
             busy_rooms.append(a.classroom_id)
         elif start > now:
@@ -91,14 +91,43 @@ def dashboard(request):
     # Get available rooms based on current time
     available_rooms = get_available_classrooms(today)
 
+    # Get all classrooms with availability status
+    # A classroom is unavailable only when there is an active booking right now.
+    all_classrooms = Classroom.objects.filter(is_active=True).order_by('room_number')
+    classroom_status = []
+    
+    for room in all_classrooms:
+        # Check if classroom has any active or upcoming booking
+        is_available = True
+        room_allocations = Allocation.objects.filter(classroom=room, date=today)
+        
+        for alloc in room_allocations:
+            alloc_start = alloc.start_time
+            alloc_end_dt = datetime.combine(today, alloc.start_time) + timedelta(minutes=alloc.duration_minutes)
+            alloc_end = alloc_end_dt.time()
+
+            # Unavailable only during the booking window.
+            if alloc_start <= now.time() < alloc_end:
+                is_available = False
+                break
+        
+        classroom_status.append({
+            'room': room,
+            'is_available': is_available
+        })
+    
+    # Count currently available classrooms.
+    available_count = sum(1 for item in classroom_status if item['is_available'])
+
     return render(request, "dashboard.html", {
         "ongoing_classes": ongoing,
         "upcoming_classes": upcoming,
         "available_rooms": available_rooms,
-        "all_allocations": allocations,
+        "all_allocations": all_allocations,
         "active_count": len(ongoing),
-        "available_count": len(available_rooms),
-        "current_time": current_time,
+        "available_count": available_count,
+        "classroom_status": classroom_status,
+        "current_time": now,
         "school_start": SCHOOL_START_TIME,
         "school_end": SCHOOL_END_TIME,
     })
@@ -203,8 +232,8 @@ def book_classroom(request):
 @login_required
 @login_required
 def active_classes(request):
-    now = timezone.now()
-    today = date.today()
+    now = timezone.localtime()
+    today = now.date()
 
     # Get all allocations for today (booked classes)
     allocations = Allocation.objects.filter(date=today).order_by('start_time')
@@ -220,7 +249,7 @@ def active_classes(request):
         start = timezone.make_aware(start_naive, timezone=tz)
         end = timezone.make_aware(end_naive, timezone=tz)
         
-        if start <= now <= end:
+        if start <= now < end:
             status = "Active"
         elif end < now:
             status = "Completed"

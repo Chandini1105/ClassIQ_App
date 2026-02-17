@@ -1,6 +1,11 @@
 ﻿{% extends 'base.html' %}
 
 {% block content %}
+<script>
+    setTimeout(function () {
+        window.location.reload();
+    }, 60000);
+</script>
 
 <div class="page-header">
     <h1>📊 Dashboard</h1>
@@ -117,23 +122,27 @@
         <p class="empty-message">No upcoming classes today</p>
     {% endif %}
 </div>
-
+  
 <!-- AVAILABLE CLASSROOMS RIGHT NOW -->
 <div class="section">
-    <h2>✅ Available Classrooms (Right Now)</h2>
+    <h2>✅ Classroom Availability (Right Now)</h2>
 
-    {% if available_rooms %}
+    {% if classroom_status %}
     <div class="classroom-grid">
-        {% for room in available_rooms %}
-        <div class="classroom-card">
-            <div class="room-number">{{ room.room_number }}</div>
-            <p class="capacity">👥 Capacity: {{ room.capacity }}</p>
-            <p class="status-available">✓ Available Now</p>
+        {% for item in classroom_status %}
+        <div class="classroom-card {% if item.is_available %}available{% else %}unavailable{% endif %}">
+            <div class="room-number">{{ item.room.room_number }}</div>
+            <p class="capacity">👥 Capacity: {{ item.room.capacity }}</p>
+            {% if item.is_available %}
+                <p class="status-available">✓ Available Now</p>
+            {% else %}
+                <p class="status-unavailable">✗ Booked Now</p>
+            {% endif %}
         </div>
         {% endfor %}
     </div>
     {% else %}
-        <p class="empty-message">All classrooms are currently booked</p>
+        <p class="empty-message">No classrooms available</p>
     {% endif %}
 </div>
 
@@ -185,6 +194,7 @@
     {% else %}
         <p class="empty-message">No classrooms booked today</p>
     {% endif %}
+
 </div>
 
 <style>
@@ -288,6 +298,25 @@
         border-top-color: #059669;
     }
     
+    .classroom-card.available {
+        border-top-color: #10b981;
+    }
+    
+    .classroom-card.available:hover {
+        box-shadow: 0 10px 24px rgba(16, 185, 129, 0.15);
+        border-top-color: #059669;
+    }
+    
+    .classroom-card.unavailable {
+        border-top-color: #ef4444;
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.03) 0%, rgba(239, 68, 68, 0.01) 100%);
+    }
+    
+    .classroom-card.unavailable:hover {
+        box-shadow: 0 10px 24px rgba(239, 68, 68, 0.15);
+        border-top-color: #dc2626;
+    }
+    
     .classroom-card .room-number {
         margin: 0 0 12px 0;
         color: #0f1724;
@@ -304,6 +333,13 @@
     .classroom-card .status-available {
         margin: 0;
         color: #10b981;
+        font-weight: 700;
+        font-size: 14px;
+    }
+    
+    .classroom-card .status-unavailable {
+        margin: 0;
+        color: #ef4444;
         font-weight: 700;
         font-size: 14px;
     }
