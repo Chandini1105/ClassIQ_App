@@ -271,8 +271,7 @@ def add_user(request):
     """Admin view to create new users with default password"""
     # Check if user is superuser/staff
     if not request.user.is_staff:
-        return redirect('dashboard')
-    
+        return redirect('dashboard')    
     if request.method == 'POST':
         name = request.POST.get('name', '').strip()
         email = request.POST.get('email', '').strip()

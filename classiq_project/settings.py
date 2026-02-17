@@ -33,10 +33,24 @@ SECRET_KEY = os.environ.get(
 DEBUG = os.environ.get("DEBUG", "True") == "True"
 
 # Allow passing a comma-separated list of hosts via the ALLOWED_HOSTS env var.
+# Include the Render hostname by default for production deploys.
 ALLOWED_HOSTS = [
     h.strip()
-    for h in os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+    for h in os.environ.get(
+        "ALLOWED_HOSTS",
+        "localhost,127.0.0.1,classiq-app-cs.onrender.com",
+    ).split(",")
     if h.strip()
+]
+
+# Trusted origins for CSRF-protected POST requests (useful on hosted domains).
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get(
+        "CSRF_TRUSTED_ORIGINS",
+        "https://classiq-app-cs.onrender.com",
+    ).split(",")
+    if origin.strip()
 ]
 
 # Application definition
