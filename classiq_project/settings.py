@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+from urllib.parse import parse_qs, urlparse
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -95,16 +96,49 @@ WSGI_APPLICATION = 'classiq_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'classiq_db',
-        'USER': 'root',
-        'PASSWORD': 'hp@123',
-        'HOST': 'localhost',
-        'PORT': '3306',
+DATABASE_URL = os.environ.get("DATABASE_URL", "").strip()
+
+if DATABASE_URL:
+    parsed = urlparse(DATABASE_URL)
+    scheme = parsed.scheme.lower()
+
+    if scheme in ("postgres", "postgresql"):
+        engine = "django.db.backends.postgresql"
+    elif scheme in ("mysql", "mysql2"):
+        engine = "django.db.backends.mysql"
+    elif scheme == "sqlite":
+        engine = "django.db.backends.sqlite3"
+    else:
+        raise ValueError(f"Unsupported DATABASE_URL scheme: {scheme}")
+
+    if engine == "django.db.backends.sqlite3":
+        db_path = parsed.path.lstrip("/") or "db.sqlite3"
+        DATABASES = {
+            "default": {
+                "ENGINE": engine,
+                "NAME": db_path,
+            }
+        }
+    else:
+        options = {k: v[-1] for k, v in parse_qs(parsed.query).items() if v}
+        DATABASES = {
+            "default": {
+                "ENGINE": engine,
+                "NAME": parsed.path.lstrip("/"),
+                "USER": parsed.username or "",
+                "PASSWORD": parsed.password or "",
+                "HOST": parsed.hostname or "",
+                "PORT": str(parsed.port or ""),
+                "OPTIONS": options,
+            }
+        }
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
     }
-}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
