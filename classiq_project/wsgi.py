@@ -25,3 +25,13 @@ if os.environ.get("AUTO_CREATE_DEFAULT_USER", "").strip().lower() in ("1", "true
         # Avoid crashing the app on startup for a non-critical helper
         pass
 
+# Optional: auto-run migrations on startup (Render, etc.)
+if os.environ.get("AUTO_RUN_MIGRATIONS", "").strip().lower() in ("1", "true", "yes", "y"):
+    try:
+        from django.core.management import call_command
+
+        call_command("migrate", interactive=False)
+    except Exception:
+        # Avoid crashing the app on startup for a non-critical helper
+        pass
+
