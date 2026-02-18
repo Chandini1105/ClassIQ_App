@@ -186,3 +186,16 @@ Your ClassIQ system now supports:
 ✅ Full Django admin integration for user management
 
 Enjoy your upgraded authentication system! 🎓
+
+# Cloud Deploy (Render)
+Set these environment variables in Render to auto-create a default login user on startup:
+- `AUTO_CREATE_DEFAULT_USER=1`
+- `DEFAULT_LOGIN_EMAIL=your.name@cmr.edu.in`
+- `DEFAULT_LOGIN_PASSWORD=CMRU 1`
+- `DEFAULT_LOGIN_NAME=Your Name`
+Optional (for admin access):
+- `DEFAULT_LOGIN_IS_STAFF=1`
+- `DEFAULT_LOGIN_IS_SUPERUSER=1`
+
+After deploy, login with the email and password above.
+
