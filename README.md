@@ -532,3 +532,9 @@ For issues, questions, or suggestions, please:
 **Last Updated**: February 2026
 =======
 >>>>>>> 2f9e5273232b0935dcde3fe8037b519e0ee27738
+
+## Deployment Notes
+For cloud deploys, use a managed Postgres database and set `DATABASE_URL`.
+SQLite is not suitable for cloud deployments.
+Example: `postgres://user:pass@host:port/dbname`
+
