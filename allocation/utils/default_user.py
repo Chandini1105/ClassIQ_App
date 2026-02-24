@@ -43,40 +43,49 @@ def ensure_default_user() -> None:
             or User.objects.filter(username__iexact=email).first()
         )
         if existing:
+            user = existing
+            logger.info("Default user already exists: %s", email)
             if reset_password:
-                existing.set_password(password)
-                existing.save(update_fields=["password"])
+                user.set_password(password)
                 logger.info("Default user password reset for %s", email)
-            else:
-                logger.info("Default user already exists: %s", email)
-            return
+        else:
+            user = User.objects.create_user(
+                username=email.lower(),
+                email=email.lower(),
+                password=password,
+            )
+            logger.info("Default user created: %s", email)
 
-        user = User.objects.create_user(
-            username=email.lower(),
-            email=email.lower(),
-            password=password,
-        )
-        logger.info("Default user created: %s", email)
+        update_fields = []
 
-        # Set optional flags when provided
-        if _truthy(os.environ.get("DEFAULT_LOGIN_IS_STAFF", "")):
+        # Apply role flags for both new and existing users.
+        if _truthy(os.environ.get("DEFAULT_LOGIN_IS_STAFF", "")) and not user.is_staff:
             user.is_staff = True
-        if _truthy(os.environ.get("DEFAULT_LOGIN_IS_SUPERUSER", "")):
+            update_fields.append("is_staff")
+        if _truthy(os.environ.get("DEFAULT_LOGIN_IS_SUPERUSER", "")) and not user.is_superuser:
             user.is_superuser = True
+            update_fields.append("is_superuser")
+        if not user.is_active:
+            user.is_active = True
+            update_fields.append("is_active")
 
         # Best-effort name split
         if name.strip():
             parts = name.strip().split()
-            user.first_name = parts[0]
-            if len(parts) > 1:
-                user.last_name = " ".join(parts[1:])
+            first_name = parts[0]
+            last_name = " ".join(parts[1:]) if len(parts) > 1 else ""
+            if user.first_name != first_name:
+                user.first_name = first_name
+                update_fields.append("first_name")
+            if user.last_name != last_name:
+                user.last_name = last_name
+                update_fields.append("last_name")
 
-        user.save(update_fields=[
-            "is_staff",
-            "is_superuser",
-            "first_name",
-            "last_name",
-        ])
+        if reset_password:
+            update_fields.append("password")
+
+        if update_fields:
+            user.save(update_fields=list(dict.fromkeys(update_fields)))
     except (OperationalError, ProgrammingError):
         # Database isn't ready yet (e.g., during first migrate)
         return
