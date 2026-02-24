@@ -3,10 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout, get_user_model
 from django.utils import timezone
 from django.contrib import messages
-from django.db.models import Value
-from django.db.models.functions import Replace, Upper
 from datetime import datetime, date, time, timedelta
-import os
 
 from .models import (
     Faculty,
@@ -187,53 +184,8 @@ def book_classroom(request):
                 name=course_name,
                 faculty=faculty
             )
-        # Classroom MUST exist. Match case-insensitively and ignore spaces.
-        entered_classroom = data["classroom"].strip()
-        normalized_entered = "".join(entered_classroom.split()).upper()
-
-        classroom = Classroom.objects.filter(
-            room_number__iexact=entered_classroom
-        ).first()
-
-        if not classroom:
-            classroom = (
-                Classroom.objects.annotate(
-                    normalized_room_number=Upper(
-                        Replace("room_number", Value(" "), Value(""))
-                    )
-                )
-                .filter(normalized_room_number=normalized_entered)
-                .first()
-            )
-
-        if not classroom:
-            # Bootstrap fallback for fresh deployments without classroom seed data.
-            if not Classroom.objects.exists() and entered_classroom:
-                default_capacity = int(os.environ.get("DEFAULT_CLASSROOM_CAPACITY", "60"))
-                classroom = Classroom.objects.create(
-                    room_number=entered_classroom,
-                    capacity=default_capacity,
-                    is_active=True,
-                )
-                messages.info(
-                    request,
-                    f"Created first classroom '{classroom.room_number}' with capacity {classroom.capacity}.",
-                )
-
-        if not classroom:
-            available_rooms = list(
-                Classroom.objects.filter(is_active=True)
-                .order_by("room_number")
-                .values_list("room_number", flat=True)[:10]
-            )
-            if available_rooms:
-                form.add_error(
-                    "classroom",
-                    f"Classroom does not exist. Try one of: {', '.join(available_rooms)}",
-                )
-            else:
-                form.add_error("classroom", "No active classrooms found. Please contact admin.")
-            return render(request, "book_classroom.html", {"form": form})
+        # Classroom comes from admin-managed ModelChoiceField.
+        classroom = data["classroom"]
         
         allocation = Allocation(
             student_leader=student_leader,
@@ -269,7 +221,17 @@ def book_classroom(request):
             messages.success(request, f"✓ Classroom {classroom.room_number} booked successfully!")
             return redirect("dashboard")
 
-    return render(request, "book_classroom.html", {"form": form, "school_start": SCHOOL_START_TIME, "school_end": SCHOOL_END_TIME})
+    if not Classroom.objects.filter(is_active=True).exists():
+        messages.error(
+            request,
+            "No active classrooms found. Add classrooms from Django admin first.",
+        )
+
+    return render(
+        request,
+        "book_classroom.html",
+        {"form": form, "school_start": SCHOOL_START_TIME, "school_end": SCHOOL_END_TIME},
+    )
 
 @login_required
 @login_required
