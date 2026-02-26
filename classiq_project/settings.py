@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+ 
 from pathlib import Path
 import os
 from urllib.parse import parse_qs, urlparse
@@ -76,7 +76,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
+  
 # Static files (for Render or other hosts)
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(str(BASE_DIR), "staticfiles")
@@ -160,7 +160,7 @@ else:
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
-
+ 
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -175,7 +175,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
@@ -207,3 +206,7 @@ LOGOUT_REDIRECT_URL = '/login/'
 # Messages Framework
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
  
+
+
+
+

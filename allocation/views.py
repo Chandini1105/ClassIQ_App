@@ -18,6 +18,34 @@ from .forms import AllocationForm
 
 User = get_user_model()
 DEFAULT_PASSWORD = "CMRU 1"
+DEFAULT_CLASSROOM_CAPACITY = 60
+DEFAULT_CLASSROOMS = [
+    "B101", "B102", "B103", "B104", "B105", "B106", "B107", "B108",
+    "B201", "B202", "B203", "B204", "B205", "B206", "B207", "B208",
+    "B301", "B302", "B303", "B304", "B305", "B306", "B307", "B308",
+    "B401", "B402",
+]
+
+
+def ensure_default_classrooms():
+    """Ensure default classrooms exist so dashboard and booking always have base rooms."""
+    existing_rooms = set(
+        Classroom.objects.filter(room_number__in=DEFAULT_CLASSROOMS)
+        .values_list("room_number", flat=True)
+    )
+    missing_rooms = [room for room in DEFAULT_CLASSROOMS if room not in existing_rooms]
+
+    if missing_rooms:
+        Classroom.objects.bulk_create(
+            [
+                Classroom(
+                    room_number=room,
+                    capacity=DEFAULT_CLASSROOM_CAPACITY,
+                    is_active=True,
+                )
+                for room in missing_rooms
+            ]
+        )
 
 def get_available_classrooms(date_obj=None, exclude_time_ranges=None):
     """
@@ -64,6 +92,7 @@ def logout_view(request):
 
 @login_required
 def dashboard(request):
+    ensure_default_classrooms()
     now = timezone.localtime()
     today = now.date()
 
@@ -139,6 +168,7 @@ def help(request):
 
 @login_required
 def book_classroom(request):
+    ensure_default_classrooms()
     form = AllocationForm(request.POST or None)
 
     if form.is_valid():
