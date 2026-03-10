@@ -7,6 +7,7 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', views.logout_view, name='logout'), 
     path('book/', views.book_classroom, name='book_classroom'),
+    path('cancel-booking/<int:allocation_id>/', views.cancel_booking, name='cancel_booking'),
     path('active-classes/', views.active_classes, name='active_classes'),
     path('help/', views.help, name='help'),
     path('admin/add-user/', views.add_user, name='add_user'),

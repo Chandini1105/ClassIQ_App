@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout, get_user_model
 from django.utils import timezone
@@ -14,7 +14,7 @@ from .models import (
     SCHOOL_START_TIME,
     SCHOOL_END_TIME,
 )
-from .forms import AllocationForm
+from .forms import AllocationForm, CancelBookingForm
 
 User = get_user_model()
 DEFAULT_PASSWORD = "CMRU 1"
@@ -25,7 +25,6 @@ DEFAULT_CLASSROOMS = [
     "B301", "B302", "B303", "B304", "B305", "B306", "B307", "B308",
     "B401", "B402",
 ]
-
 
 def ensure_default_classrooms():
     """Ensure default classrooms exist so dashboard and booking always have base rooms."""
@@ -64,19 +63,18 @@ def get_available_classrooms(date_obj=None, exclude_time_ranges=None):
     available = []
     
     for room in all_rooms:
-        # Check if there are any conflicting allocations
         allocations = Allocation.objects.filter(
             classroom=room,
-            date=date_obj
+            date=date_obj,
+            is_cancelled=False,
         )
         
         is_available = True
         for alloc in allocations:
             alloc_start = alloc.start_time
             alloc_end_dt = datetime.combine(date_obj, alloc.start_time) + timedelta(minutes=alloc.duration_minutes)
-            alloc_end = alloc_end_dt.time()
-            
-            # Check if current time falls within any booking
+            alloc_end = alloc_end_dt.time() 
+           
             if alloc_start <= current_time < alloc_end:
                 is_available = False
                 break
@@ -96,8 +94,7 @@ def dashboard(request):
     now = timezone.localtime()
     today = now.date()
 
-    # Get all allocations for today
-    all_allocations = Allocation.objects.filter(date=today)
+    all_allocations = Allocation.objects.filter(date=today, is_cancelled=False)
 
     ongoing = []
     upcoming = []
@@ -128,7 +125,11 @@ def dashboard(request):
     for room in all_classrooms:
         # Check if classroom has any active or upcoming booking
         is_available = True
-        room_allocations = Allocation.objects.filter(classroom=room, date=today)
+        room_allocations = Allocation.objects.filter(
+            classroom=room,
+            date=today,
+            is_cancelled=False,
+        )
         
         for alloc in room_allocations:
             alloc_start = alloc.start_time
@@ -162,7 +163,7 @@ def dashboard(request):
     })
 
 @login_required
-def help(request):
+def help(request): 
     """Display help and support page"""
     return render(request, "help.html")
 
@@ -232,6 +233,7 @@ def book_classroom(request):
         conflicting_allocations = Allocation.objects.filter(
             classroom=classroom,
             date=booking_date,
+            is_cancelled=False,
         )
         
         conflict = False
@@ -263,6 +265,61 @@ def book_classroom(request):
         {"form": form, "school_start": SCHOOL_START_TIME, "school_end": SCHOOL_END_TIME},
     )
 
+
+@login_required
+def cancel_booking(request, allocation_id):
+    allocation = get_object_or_404(Allocation, pk=allocation_id)
+
+    if allocation.is_cancelled:
+        messages.info(request, "This booking is already cancelled.")
+        return redirect("dashboard")
+
+    now = timezone.localtime()
+    tz = timezone.get_current_timezone()
+    start = timezone.make_aware(
+        datetime.combine(allocation.date, allocation.start_time),
+        timezone=tz,
+    )
+    end = timezone.make_aware(allocation.end_time(), timezone=tz)
+
+    if end < now:
+        messages.error(request, "Completed bookings cannot be cancelled.")
+        return redirect("dashboard")
+
+    expected_student = allocation.student_leader.name if allocation.student_leader else ""
+    expected_faculty = allocation.course.faculty.name if allocation.course and allocation.course.faculty else ""
+
+    if request.method == "POST":
+        form = CancelBookingForm(
+            request.POST,
+            expected_faculty=expected_faculty,
+            expected_student=expected_student,
+        )
+        if form.is_valid():
+            allocation.is_cancelled = True
+            allocation.cancelled_at = timezone.now()
+            allocation.cancellation_student_name = form.cleaned_data["student_name"]
+            allocation.cancellation_faculty_name = form.cleaned_data["faculty_name"]
+            allocation.cancellation_reason = form.cleaned_data["reason"]
+            allocation.save()
+            messages.success(request, f"Booking for classroom {allocation.classroom} cancelled.")
+            return redirect("dashboard")
+    else:
+        form = CancelBookingForm(
+            initial={
+                "student_name": expected_student,
+                "faculty_name": expected_faculty,
+            },
+            expected_faculty=expected_faculty,
+            expected_student=expected_student,
+        )
+
+    return render(
+        request,
+        "cancel_booking.html",
+        {"allocation": allocation, "form": form, "start": start, "end": end},
+    )
+
 @login_required
 @login_required
 def active_classes(request):
@@ -270,7 +327,7 @@ def active_classes(request):
     today = now.date()
 
     # Get all allocations for today (booked classes)
-    allocations = Allocation.objects.filter(date=today).order_by('start_time')
+    allocations = Allocation.objects.filter(date=today, is_cancelled=False).order_by('start_time')
     
     # Add status to each allocation
     tz = timezone.get_current_timezone()
@@ -346,5 +403,4 @@ def add_user(request):
     # Show existing users
     users = User.objects.all().order_by('-date_joined')
     return render(request, 'add_user.html', {'users': users})
-
 

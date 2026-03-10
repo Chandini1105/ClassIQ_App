@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Cancel Booking</h1>
+    <p class="subtitle">Confirm details and provide a reason</p>
+</div>
+
+<div class="form-card">
+    <div style="background:#fff7ed;border:1px solid #fed7aa;padding:14px;border-radius:10px;margin-bottom:18px;">
+        <div style="font-weight:700;color:#9a3412;margin-bottom:6px;">Booking Details</div>
+        <div style="color:#7c2d12;">
+            <div><strong>Classroom:</strong> {{ allocation.classroom }}</div>
+            <div><strong>Course:</strong> {{ allocation.course }}</div>
+            <div><strong>Date:</strong> {{ allocation.date }}</div>
+            <div><strong>Time:</strong> {{ allocation.start_time|date:"g:i A" }} – {{ end|date:"g:i A" }}</div>
+        </div>
+    </div>
+
+    {% if form.non_field_errors %}
+    <div class="error-box">
+        {{ form.non_field_errors }}
+    </div>
+    {% endif %}
+
+    <form method="post" class="booking-form">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="id_student_name" class="form-label">Student Name <span class="required">*</span></label>
+            {{ form.student_name }}
+            {% if form.student_name.errors %}
+                <div class="error-text">{{ form.student_name.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_faculty_name" class="form-label">Faculty Name <span class="required">*</span></label>
+            {{ form.faculty_name }}
+            {% if form.faculty_name.errors %}
+                <div class="error-text">{{ form.faculty_name.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_reason" class="form-label">Reason <span class="required">*</span></label>
+            {{ form.reason }}
+            {% if form.reason.errors %}
+                <div class="error-text">{{ form.reason.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">Cancel Booking</button>
+            <a href="{% url 'dashboard' %}" class="btn-secondary">Back</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

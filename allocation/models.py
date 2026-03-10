@@ -46,14 +46,19 @@ class Classroom(models.Model):
         # Check if there's any conflicting allocation
         conflicting = Allocation.objects.filter(
             classroom=self,
-            date=date_obj
+            date=date_obj,
+            is_cancelled=False,
         ).exists()
         
         if not conflicting:
             return True
         
         # Check for specific time conflict
-        for allocation in Allocation.objects.filter(classroom=self, date=date_obj):
+        for allocation in Allocation.objects.filter(
+            classroom=self,
+            date=date_obj,
+            is_cancelled=False,
+        ):
             alloc_start = allocation.start_time
             alloc_end_dt = datetime.combine(date_obj, allocation.start_time) + timedelta(minutes=allocation.duration_minutes)
             alloc_end = alloc_end_dt.time()
@@ -80,6 +85,13 @@ class Allocation(models.Model):
     start_time = models.TimeField()
     duration_minutes = models.PositiveIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+    # Cancellation (optional; preserves existing allocations)
+    is_cancelled = models.BooleanField(default=False)
+    cancelled_at = models.DateTimeField(null=True, blank=True)
+    cancellation_student_name = models.CharField(max_length=100, blank=True)
+    cancellation_faculty_name = models.CharField(max_length=100, blank=True)
+    cancellation_reason = models.TextField(blank=True)
 
     def end_time(self):
         start = datetime.combine(self.date, self.start_time)
