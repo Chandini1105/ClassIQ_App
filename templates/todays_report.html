@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🧾 Today's Report</h1>
+    <p class="subtitle">
+        Date: <strong>{{ today|date:"l, j F Y" }}</strong> • Generated at: <strong>{{ now|date:"g:i A" }}</strong> (IST)
+    </p>
+</div>
+
+{% if not report_available %}
+    <div class="section">
+        <div style="background:#fff7ed;border:1px solid #fed7aa;padding:16px;border-radius:12px;">
+            <h2 style="margin:0 0 6px 0;">Report not available yet</h2>
+            <p style="margin:0;color:var(--muted);">
+                The detailed report can be generated only after <strong>{{ school_end|date:"g:i A" }}</strong>.
+                Current time: <strong>{{ now|date:"g:i A" }}</strong>.
+            </p>
+        </div>
+    </div>
+{% else %}
+
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-bottom:14px;">
+        <button class="btn-primary" onclick="window.print()">Print / Save PDF</button>
+    </div>
+
+    <div class="cards">
+        <div class="card card-blue">
+            <div class="card-icon">🏫</div>
+            <h3>Total Bookings</h3>
+            <p class="card-value">{{ summary.total_bookings }}</p>
+            <small>Bookings (not cancelled)</small>
+        </div>
+
+        <div class="card card-green">
+            <div class="card-icon">✅</div>
+            <h3>Unique Rooms Booked</h3>
+            <p class="card-value">{{ summary.unique_classrooms_booked }}</p>
+            <small>Distinct classrooms used</small>
+        </div>
+
+        <div class="card card-blue">
+            <div class="card-icon">⏱️</div>
+            <h3>Total Utilization</h3>
+            <p class="card-value">{{ summary.total_booked_hours }}h {{ summary.total_booked_remaining_minutes }}m</p>
+            <small>Sum of booked durations</small>
+        </div>
+
+        <div class="card card-green">
+            <div class="card-icon">🚫</div>
+            <h3>Cancellations</h3>
+            <p class="card-value">{{ summary.total_cancellations }}</p>
+            <small>Bookings cancelled today</small>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>📌 Day Summary</h2>
+        <table class="data-table">
+            <tbody>
+                <tr>
+                    <th style="width:260px;">College Closing Time</th>
+                    <td>{{ school_end|date:"g:i A" }}</td>
+                </tr>
+                <tr>
+                    <th>First Class Start</th>
+                    <td>{% if summary.earliest_start_time %}{{ summary.earliest_start_time|date:"g:i A" }}{% else %}—{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>Last Class End</th>
+                    <td>{% if summary.latest_end_time %}{{ summary.latest_end_time|date:"g:i A" }}{% else %}—{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>Total Records</th>
+                    <td>{{ summary.total_records }} ({{ summary.total_bookings }} booked, {{ summary.total_cancellations }} cancelled)</td>
+                </tr>
+                <tr>
+                    <th>Rooms Cancelled (Unique)</th>
+                    <td>{{ summary.unique_classrooms_cancelled }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>📅 Booked Classrooms (Completed for the Day)</h2>
+        {% if booked_allocations %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Classroom</th>
+                        <th>Course</th>
+                        <th>Faculty</th>
+                        <th>Department</th>
+                        <th>Student Leader</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Duration</th>
+                        <th>Booked At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for alloc in booked_allocations %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td><strong>{{ alloc.classroom.room_number }}</strong></td>
+                            <td>
+                                {{ alloc.course.name }}
+                                {% if alloc.course.year %}<div style="color:var(--muted);font-size:12px;">Year: {{ alloc.course.year }}</div>{% endif %}
+                            </td>
+                            <td>{{ alloc.course.faculty.name }}</td>
+                            <td>{% if alloc.course.faculty.department %}{{ alloc.course.faculty.department }}{% else %}—{% endif %}</td>
+                            <td>{% if alloc.student_leader %}{{ alloc.student_leader.name }}{% else %}—{% endif %}</td>
+                            <td>{{ alloc.start_time|date:"g:i A" }}</td>
+                            <td>{{ alloc.end_time|date:"g:i A" }}</td>
+                            <td>{{ alloc.duration_minutes }} min</td>
+                            <td>{{ alloc.created_at|date:"j M Y, g:i A" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="empty-message">No bookings were created for today.</p>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h2>❌ Cancelled Bookings (With Reasons)</h2>
+        {% if cancelled_allocations %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Classroom</th>
+                        <th>Course</th>
+                        <th>Faculty</th>
+                        <th>Student Leader</th>
+                        <th>Original Time</th>
+                        <th>Cancelled At</th>
+                        <th>Cancelled By (Student)</th>
+                        <th>Cancelled By (Faculty)</th>
+                        <th>Reason</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for alloc in cancelled_allocations %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td><strong>{{ alloc.classroom.room_number }}</strong></td>
+                            <td>{{ alloc.course.name }}</td>
+                            <td>{{ alloc.course.faculty.name }}</td>
+                            <td>{% if alloc.student_leader %}{{ alloc.student_leader.name }}{% else %}—{% endif %}</td>
+                            <td>{{ alloc.start_time|date:"g:i A" }} – {{ alloc.end_time|date:"g:i A" }}</td>
+                            <td>{% if alloc.cancelled_at %}{{ alloc.cancelled_at|date:"j M Y, g:i A" }}{% else %}—{% endif %}</td>
+                            <td>{% if alloc.cancellation_student_name %}{{ alloc.cancellation_student_name }}{% else %}—{% endif %}</td>
+                            <td>{% if alloc.cancellation_faculty_name %}{{ alloc.cancellation_faculty_name }}{% else %}—{% endif %}</td>
+                            <td style="max-width:360px;white-space:pre-wrap;">{% if alloc.cancellation_reason %}{{ alloc.cancellation_reason }}{% else %}—{% endif %}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="empty-message">No cancellations were recorded today.</p>
+        {% endif %}
+    </div>
+
+    <style>
+        @media print {
+            .sidebar { display: none !important; }
+            .main-content { width: 100% !important; }
+            .btn-primary { display: none !important; }
+        }
+        .empty-message {
+            color: var(--muted);
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+        }
+    </style>
+
+{% endif %}
+{% endblock %}

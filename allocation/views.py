@@ -168,6 +168,87 @@ def help(request):
     return render(request, "help.html")
 
 @login_required
+def todays_report(request):
+    now = timezone.localtime()
+    today = now.date()
+
+    report_available = now.time() >= SCHOOL_END_TIME
+
+    booked_allocations = []
+    cancelled_allocations = []
+    summary = {
+        "total_bookings": 0,
+        "total_cancellations": 0,
+        "total_records": 0,
+        "unique_classrooms_booked": 0,
+        "unique_classrooms_cancelled": 0,
+        "total_booked_minutes": 0,
+        "total_booked_hours": 0,
+        "total_booked_remaining_minutes": 0,
+        "earliest_start_time": None,
+        "latest_end_time": None,
+    }
+
+    if report_available:
+        qs = (
+            Allocation.objects.filter(date=today)
+            .select_related("classroom", "course", "course__faculty", "student_leader")
+            .order_by("start_time", "classroom__room_number")
+        )
+        booked_allocations = [a for a in qs if not a.is_cancelled]
+        cancelled_allocations = [a for a in qs if a.is_cancelled]
+
+        total_booked_minutes = sum(a.duration_minutes for a in booked_allocations)
+        unique_classrooms_booked = (
+            Allocation.objects.filter(date=today, is_cancelled=False)
+            .values("classroom_id")
+            .distinct()
+            .count()
+        )
+        unique_classrooms_cancelled = (
+            Allocation.objects.filter(date=today, is_cancelled=True)
+            .values("classroom_id")
+            .distinct()
+            .count()
+        )
+
+        earliest_start = None
+        latest_end = None
+        for alloc in booked_allocations:
+            if earliest_start is None or alloc.start_time < earliest_start:
+                earliest_start = alloc.start_time
+            alloc_end_time = alloc.end_time().time()
+            if latest_end is None or alloc_end_time > latest_end:
+                latest_end = alloc_end_time
+
+        summary = {
+            "total_bookings": len(booked_allocations),
+            "total_cancellations": len(cancelled_allocations),
+            "total_records": len(booked_allocations) + len(cancelled_allocations),
+            "unique_classrooms_booked": unique_classrooms_booked,
+            "unique_classrooms_cancelled": unique_classrooms_cancelled,
+            "total_booked_minutes": total_booked_minutes,
+            "total_booked_hours": total_booked_minutes // 60,
+            "total_booked_remaining_minutes": total_booked_minutes % 60,
+            "earliest_start_time": earliest_start,
+            "latest_end_time": latest_end,
+        }
+
+    return render(
+        request,
+        "todays_report.html",
+        {
+            "today": today,
+            "now": now,
+            "report_available": report_available,
+            "school_end": SCHOOL_END_TIME,
+            "booked_allocations": booked_allocations,
+            "cancelled_allocations": cancelled_allocations,
+            "summary": summary,
+        },
+    )
+
+@login_required
 def book_classroom(request):
     ensure_default_classrooms()
     form = AllocationForm(request.POST or None)
