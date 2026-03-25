@@ -40,6 +40,11 @@
                 Active Classes
             </a>
 
+            <a href="{% url 'todays_report' %}"
+               class="{% if request.resolver_match.url_name == 'todays_report' %}active{% endif %}">
+                Today's Report
+            </a>
+
             <a href="{% url 'help' %}"
                class="{% if request.resolver_match.url_name == 'help' %}active{% endif %}">
                 Help & Support

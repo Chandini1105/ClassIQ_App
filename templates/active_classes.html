@@ -6,6 +6,10 @@
     <p class="subtitle">Today's classroom schedule and status</p>
 </div>
 
+<div style="display:flex;justify-content:flex-end;gap:10px;margin:0 auto 14px auto;max-width:1100px;">
+    <a class="btn-primary" href="{% url 'todays_report' %}" style="text-decoration:none;display:inline-block;flex:0 0 auto;">Today's Report</a>
+</div>
+
 {% if allocations %}
 <table class="data-table">
     <thead>
