@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="page-header">
-    <h1>👁️Active Classes</h1>
+    <h1>ðŸ‘ï¸Today's class conducted</h1>
     <p class="subtitle">Today's classroom schedule and status</p>
 </div>
 
@@ -29,7 +29,7 @@
             <td>{{ item.allocation.course.faculty.name }}</td>
             <td>{{ item.allocation.classroom }}</td>
             <td>{{ item.allocation.date }}</td>
-            <td>{{ item.allocation.start_time|date:"g:i A" }} – {{ item.allocation.end_time|date:"g:i A" }}</td>
+            <td>{{ item.allocation.start_time|date:"g:i A" }} â€“ {{ item.allocation.end_time|date:"g:i A" }}</td>
             <td>
                 {% if item.status == "Active" %}
                     <span class="status active">Active</span>
@@ -76,4 +76,3 @@
 </style>
 
 {% endblock %}
-
